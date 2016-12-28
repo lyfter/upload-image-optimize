@@ -92,22 +92,20 @@ function modifyMainImageOnUpload($file)
 
     $allowedFileTypes = array(
         'image/jpeg',
-        'image/gif',
         'image/png',
         'image/bmp',
         'image/x-icon',
         'image/tiff'
     );
 
-    $compressionQuality = get_option('CompressionQuality');
-    $maxSize = get_option('MaxSize');
-
     if (!in_array($file['type'], $allowedFileTypes)) {
         return $file;
     }
 
-    $image = new Imagick($file['file']);
+    $compressionQuality = get_option('CompressionQuality');
+    $maxSize = get_option('MaxSize');
 
+    $image = new Imagick($file['file']);
     $size = @getimagesize($file['file']);
 
     if (!$size) {
