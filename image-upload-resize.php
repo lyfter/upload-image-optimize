@@ -55,11 +55,11 @@ function imageUploadResizeOptionsPage()
             <table class="form-table">
                 <tr valign="top">
                     <th scope="row">Maximum size:</th>
-                    <td><input type="text" name="MaxSize" value="<?php echo get_option(IUR_MAX_SIZE); ?>"/></td>
+                    <td><input type="text" name="<?php echo IUR_MAX_SIZE; ?>" value="<?php echo get_option(IUR_MAX_SIZE); ?>"/></td>
                 </tr>
                 <tr valign="top">
                     <th scope="row">Compression Quality:</th>
-                    <td><input type="text" name="CompressionQuality"
+                    <td><input type="text" name="<?php echo IUR_COMPRESSION_QUALITY; ?>"
                                value="<?php echo get_option(IUR_COMPRESSION_QUALITY); ?>"/></td>
                 </tr>
             </table>
