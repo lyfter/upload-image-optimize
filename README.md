@@ -1,5 +1,7 @@
 # Resize images on upload #
 
+Wordpress plugin.
+
 When you upload an image to your WordPress media library, it's compressed. 
 The image will get a max width/height (of, 2500px). 
 The image will get an overall compression of a given percentage (75%).
