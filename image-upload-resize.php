@@ -3,23 +3,22 @@
 Plugin Name: Image upload resize
 Plugin URI:
 Description: ImageMagick resize and optimize images when uploaded.
-Author: Joep Suijkerbuijk
-Author URI: http://www.joepsuijkerbuijk.com/
+Author: Lyfter, Joep Suijkerbuijk
+Author URI: https://lyfter.nl
 Version: 1.0.0
 License: GPL v3
 */
 
+const IUR_MAX_SIZE = 'image_upload_resize_max_size';
+const IUR_COMPRESSION_QUALITY = 'image_upload_resize_compression_quality';
 
-
-function  imageUploadResizeRegisterSettings()
+function imageUploadResizeRegisterSettings()
 {
+    add_option(IUR_MAX_SIZE, '2500');
+    register_setting('imageUploadResizeSettings', IUR_MAX_SIZE);
 
-    add_option('MaxSize', '2500');
-    register_setting('imageUploadResizeSettings', 'MaxSize');
-
-    add_option('CompressionQuality', '75');
-    register_setting('imageUploadResizeSettings', 'CompressionQuality');
-
+    add_option(IUR_COMPRESSION_QUALITY, '75');
+    register_setting('imageUploadResizeSettings', IUR_COMPRESSION_QUALITY);
 }
 
 
@@ -31,79 +30,62 @@ function imageUploadResizeRegisterOptionsPage()
 
 function imageUploadResizePluginDeactivate()
 {
-    delete_option('MaxSize');
-    delete_option('CompressionQuality');
+    delete_option(IUR_MAX_SIZE);
+    delete_option(IUR_COMPRESSION_QUALITY);
 }
 
 
 function imageUploadResizeOptionsPage()
 {
     ?>
-
     <div class="wrap">
-
         <h2>Image upload resize</h2>
-
         <p>
             <?php
             if (extension_loaded('imagick') || class_exists('Imagick')) {
-                // imagick PHP module is installed
                 echo 'ImageMagick PHP Module: <span style="color: green; font-weight: bolder">OK, installed';
             } else {
                 echo 'ImageMagick PHP Module: <span style="color: red; font-weight: bolder">MISSING, not installed';
             }
             ?>
         </p>
-
         <form method="post" action="options.php">
-
             <?php settings_fields('imageUploadResizeSettings'); ?>
             <?php do_settings_sections('imageUploadResizeSettings'); ?>
-
             <table class="form-table">
-
                 <tr valign="top">
                     <th scope="row">Maximum size:</th>
-                    <td><input type="text" name="MaxSize" value="<?php echo get_option('MaxSize'); ?>"/></td>
+                    <td><input type="text" name="MaxSize" value="<?php echo get_option(IUR_MAX_SIZE); ?>"/></td>
                 </tr>
-
                 <tr valign="top">
                     <th scope="row">Compression Quality:</th>
                     <td><input type="text" name="CompressionQuality"
-                               value="<?php echo get_option('CompressionQuality'); ?>"/></td>
+                               value="<?php echo get_option(IUR_COMPRESSION_QUALITY); ?>"/></td>
                 </tr>
-
             </table>
-
             <?php submit_button(); ?>
-
         </form>
-
     </div>
-
-
     <?php
-
 }
 
 
-function modifyMainImageOnUpload($file)
+function imageUploadResizeModifyMainImageOnUpload($file)
 {
-
-    $allowedFileTypes = array(
+    $allowedFileTypes = [
         'image/jpeg',
         'image/png',
         'image/bmp',
         'image/x-icon',
         'image/tiff'
-    );
+    ];
 
     if (!in_array($file['type'], $allowedFileTypes)) {
         return $file;
     }
 
-    $compressionQuality = get_option('CompressionQuality');
-    $maxSize = get_option('MaxSize');
+    $compressionQuality = get_option(IUR_COMPRESSION_QUALITY);
+    $maxSize = get_option(IUR_MAX_SIZE);
 
     $image = new Imagick($file['file']);
     $size = @getimagesize($file['file']);
@@ -114,7 +96,6 @@ function modifyMainImageOnUpload($file)
 
     // If wanted max size is smaller than the current image width or height
     if ($image->getImageWidth() > $maxSize || $image->getImageHeight() > $maxSize) {
-
         // Resizes to whichever is larger, width or height
         if ($image->getImageHeight() <= $image->getImageWidth()) {
             // Resize image using the lanczos resampling algorithm based on width
@@ -133,22 +114,15 @@ function modifyMainImageOnUpload($file)
         $image->setImageCompressionQuality($compressionQuality);
     }
 
-    // Save 'progresive' // TODO check if this does work?
     $image->setimageinterlacescheme(Imagick::INTERLACE_PLANE);
-
-    // Strip out unneeded meta data
     $image->stripImage();
-
-
     $image->writeImage($file['file']);
-
-    // Remove the JPG from memory
     $image->destroy();
 
     return $file;
 }
 
-add_filter('wp_handle_upload', 'modifyMainImageOnUpload', 10, 2);
+add_filter('wp_handle_upload', 'imageUploadResizeModifyMainImageOnUpload', 10, 2);
 
 register_deactivation_hook(__FILE__, 'imageUploadResizePluginDeactivate');
 add_action('admin_init', 'imageUploadResizeRegisterSettings');
