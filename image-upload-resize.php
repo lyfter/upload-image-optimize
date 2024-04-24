@@ -55,12 +55,12 @@ function imageUploadResizeOptionsPage()
             <table class="form-table">
                 <tr valign="top">
                     <th scope="row">Maximum size:</th>
-                    <td><input type="text" name="<?php echo IUR_MAX_SIZE; ?>" value="<?php echo get_option(IUR_MAX_SIZE); ?>"/></td>
+                    <td><input type="text" name="<?= IUR_MAX_SIZE; ?>" value="<?= get_option(IUR_MAX_SIZE); ?>"/></td>
                 </tr>
                 <tr valign="top">
                     <th scope="row">Compression Quality:</th>
-                    <td><input type="text" name="<?php echo IUR_COMPRESSION_QUALITY; ?>"
-                               value="<?php echo get_option(IUR_COMPRESSION_QUALITY); ?>"/></td>
+                    <td><input type="text" name="<?= IUR_COMPRESSION_QUALITY; ?>"
+                               value="<?= get_option(IUR_COMPRESSION_QUALITY); ?>"/></td>
                 </tr>
             </table>
             <?php submit_button(); ?>
@@ -72,6 +72,10 @@ function imageUploadResizeOptionsPage()
 
 function imageUploadResizeModifyMainImageOnUpload($file)
 {
+    if (!extension_loaded('imagick') || !class_exists('Imagick')) {
+        return $file;
+    }
+
     $allowedFileTypes = [
         'image/jpeg',
         'image/png',
