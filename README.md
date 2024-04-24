@@ -1,8 +1,8 @@
 # Resize images on upload #
 
-When you upload a image to your wordpress media library, it's commpressed.
-The image will get a max width/height (of 2500px).
-The image will get a overal compression of a given percentage (75%).
+When you upload an image to your WordPress media library, it's compressed. 
+The image will get a max width/height (of, 2500px). 
+The image will get an overall compression of a given percentage (75%).
 
 So basically what is does. It 'saves for web'.
 
@@ -10,4 +10,4 @@ So basically what is does. It 'saves for web'.
 
 ### Requirements ###
 
-* Imagemagick php module installed on server.
+* ImageMagick PHP module installed on server.
